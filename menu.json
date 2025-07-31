@@ -1,0 +1,51 @@
+[
+  {
+    "category": "chicken",
+    "desc": "Куриное бедро, картошка фри, помидоры, огурцы, укроп",
+    "image": "/static/assets/shurma.jpg",
+    "price": "280",
+    "title": "Куриное бедро + картошка"
+  },
+  {
+    "category": "chicken",
+    "desc": "Крылья куриные, лист салата, огурцы, помидоры",
+    "image": "/static/assets/Krilesh.jpg",
+    "price": "260",
+    "title": "Куриные крылышки"
+  },
+  {
+    "category": "snacks",
+    "desc": "Наггетсы, картофель фри, кетчуп, чесночный соус",
+    "image": "/static/assets/nuggets-fries.jpg",
+    "price": "290",
+    "title": "Наггетсы + соус"
+  },
+  {
+    "category": "snacks",
+    "desc": "Наггетсы, салат, томаты, укроп",
+    "image": "/static/assets/nsgets.jpg",
+    "price": "250",
+    "title": "Наггетсы «большие»"
+  },
+  {
+    "category": "corndog",
+    "desc": "Сосиска, тесто, масло",
+    "image": "/static/assets/corndog.jpg",
+    "price": "40",
+    "title": "Корн Дог"
+  },
+  {
+    "category": "chicken",
+    "desc": "Куриные ножки, картошка фри, зелень, томаты",
+    "image": "/static/assets/Chiken.jpg",
+    "price": "320",
+    "title": "Куриные ножки + картошка"
+  },
+  {
+    "title": "Ролл",
+    "price": "500",
+    "desc": "Рыба",
+    "image": "static/assets/roll.jpg",
+    "category": "chicken"
+  }
+]

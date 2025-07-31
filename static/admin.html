@@ -1,0 +1,119 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Админка: Меню Шаурмы</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body { padding: 20px; background: #f7f7f7; }
+        .menu-item { border-radius: 10px; background: white; padding: 15px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .menu-item .btn-danger { float: right; }
+        .menu-item p { margin: 0; }
+        #msg { margin-top: 10px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 class="text-center mb-4">Админка: Меню Шаурмы</h2>
+
+    <div class="card p-4 mb-4">
+        <h5>Добавить / Изменить блюдо</h5>
+        <input id="title" class="form-control my-1" placeholder="Название">
+        <input id="price" type="number" class="form-control my-1" placeholder="Цена">
+        <textarea id="desc" class="form-control my-1" placeholder="Описание"></textarea>
+        <input id="upload" type="file" class="form-control my-1">
+        <select id="category" class="form-control my-2">
+            <option value="chicken">Курица</option>
+            <option value="snacks">Закуски</option>
+            <option value="corndog">Корн Доги</option>
+        </select>
+        <button class="btn btn-primary" onclick="addItem()">➕ Добавить</button>
+        <button class="btn btn-success" onclick="saveMenu()">💾 Сохранить на сервер</button>
+        <div id="msg" class="text-success fw-bold"></div>
+    </div>
+
+    <h5 class="mb-3">Текущее меню</h5>
+    <div id="menu"></div>
+</div>
+
+<script>
+    let menu = [];
+
+    function showMsg(text, color="success") {
+        const msg = document.getElementById("msg");
+        msg.className = "text-" + color + " fw-bold";
+        msg.textContent = text;
+        setTimeout(() => msg.textContent = "", 3000);
+    }
+
+    function render() {
+        const out = document.getElementById("menu");
+        out.innerHTML = "";
+        menu.forEach((item, index) => {
+            out.innerHTML += `
+                <div class="menu-item">
+                    <b>${item.title}</b> — ${item.price}₽
+                    <button class="btn btn-sm btn-danger" onclick='deleteItem(${index})'>Удалить</button>
+                    <br><small>${item.desc}</small><br>
+                    <small class="text-muted">${item.image} — <i>${item.category}</i></small>
+                </div>
+            `;
+        });
+    }
+
+    function addItem() {
+        const title = document.getElementById("title").value.trim();
+        const price = document.getElementById("price").value.trim();
+        const desc = document.getElementById("desc").value.trim();
+        const cat = document.getElementById("category").value;
+        const fileInput = document.getElementById("upload");
+
+        if (!title || !price || !desc || fileInput.files.length === 0)
+            return showMsg("Заполните все поля и выберите изображение", "danger");
+
+        const file = fileInput.files[0];
+        const formData = new FormData();
+        formData.append("file", file);
+        fetch("/upload", { method: "POST", body: formData })
+            .then(res => res.json())
+            .then(data => {
+                const image = data.path;
+                const existing = menu.find(i => i.title === title && i.category === cat);
+                if (existing) {
+                    Object.assign(existing, { price, desc, image });
+                } else {
+                    menu.push({ title, price, desc, image, category: cat });
+                }
+                showMsg("Блюдо добавлено");
+                render();
+                fileInput.value = "";
+            });
+    }
+
+    function deleteItem(index) {
+        fetch("/menu/delete", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ index })
+        }).then(() => {
+            menu.splice(index, 1);
+            render();
+            showMsg("Блюдо удалено", "danger");
+        });
+    }
+
+    function saveMenu() {
+        fetch("/menu", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(menu)
+        }).then(() => showMsg("Меню сохранено"));
+    }
+
+    fetch("/menu")
+        .then(res => res.json())
+        .then(data => { menu = data; render(); });
+</script>
+</body>
+</html>
